@@ -12,4 +12,17 @@
     <color name="Z3">#4755FA</color>
     <color name="V1">#4FF7F2</color>
     <color name="V2">#55FABC</color>
+
+
+    <color name="G1">#3f51b1</color>
+    <color name="G2">#5a55ae</color>
+    <color name="G3">#7b5fac</color>
+    <color name="G4">#8f6aae</color>
+    <color name="G5">#a86aa4</color>
+    <color name="G6">#cc6b8e</color>
+    <color name="G7">#f18271</color>
+    <color name="G8">#f3a469</color>
+    <color name="G9">#f7c978</color>
+
+
 </resources>
