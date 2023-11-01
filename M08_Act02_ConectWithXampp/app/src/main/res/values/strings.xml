@@ -1,3 +1,22 @@
 <resources>
-    <string name="app_name">M08_Act02_ConectWithXampp</string>
+    <string name="app_name">M08_Act02_ConnectWithXampp</string>
+
+
+    <!-- LOGIN PAGE -->
+    <string name="login_title">LOGIN</string>
+    <string name="login_imageTOP_description">Login Icon Image</string>
+    <string name="login_imageUSER_description">User Icon Image</string>
+    <string name="login_imagePASSWORD_description">Password Icon Image</string>
+    <string name="login_hint_user">Usuario</string>
+    <string name="login_hint_password">Contraseña</string>
+    <string name="login_button_text">Conectar</string>
+
+
+
+
+
+    <!-- FIM LOGIN PAGE -->
+
+
+
 </resources>

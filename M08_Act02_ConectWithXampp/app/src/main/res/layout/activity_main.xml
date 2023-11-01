@@ -1,18 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="40dp"
     tools:context=".MainActivity">
+
+    <!-- CABECERA -->
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/login_imageTOP_description"
+        android:src="@drawable/login_candadoLlave"
+        tools:ignore="ImageContrastCheck" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/montserrat_alternates_black"
+        android:text="@string/login_title"
+        android:textColor="@color/l2"
+        android:textSize="35sp"
+        android:typeface="normal"
+        tools:ignore="TextContrastCheck" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!--- USUARIO -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="10dp"
+            android:contentDescription="@string/login_imageUSER_description"
+            android:src="@drawable/login_user"
+            tools:ignore="ImageContrastCheck" />
+
+        <EditText
+            android:id="@+id/login_user"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="10dp"
+            android:autofillHints="@string/login_hint_user"
+            android:fontFamily="@font/montserrat_medium"
+            android:hint="@string/login_hint_user"
+            android:inputType="text"
+            android:textColorHint="@color/Z1"
+            android:textSize="20sp"
+            tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+
+    </LinearLayout>  <!--USUARIO-->
+
+    <!--- CONTRASEÑA -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="10dp"
+            android:contentDescription="@string/login_imagePASSWORD_description"
+            android:src="@drawable/login_key"
+            tools:ignore="ImageContrastCheck" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="10dp"
+            android:autofillHints="@string/login_hint_password"
+            android:fontFamily="@font/montserrat_medium"
+            android:hint="@string/login_hint_password"
+            android:inputType="textVisiblePassword"
+            android:textColorHint="@color/Z1"
+            android:textSize="20sp"
+            tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+
+    </LinearLayout>  <!--PASSWORD-->
+
+    <!--- BUTTON -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/A1"
+            android:backgroundTintMode="screen"
+            android:fontFamily="@font/montserrat_alternates_black"
+            android:shadowColor="@color/black"
+            android:text="@string/login_button_text"
+            android:textColor="@color/l3"
+            android:textColorHighlight="@color/Z1"
+            android:textSize="20sp"
+            tools:ignore="TextContrastCheck" />
+
+    </LinearLayout>    <!--BUTTON-->
+
+</LinearLayout>  <!--CABECERA -->
+
