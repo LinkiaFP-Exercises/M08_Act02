@@ -27,7 +27,7 @@ public class ValidateUser {
                 connexion.setDoOutput(true);
 
                 // Crear los datos del formulario
-                String datos = "usuario=" + user + "&contrasena=" + password;
+                String datos = "usuario=" + username + "&contrasena=" + password;
 
                 // Escribir los datos del formulario en la solicitud HTTP
                 OutputStream outputStream = connexion.getOutputStream();
