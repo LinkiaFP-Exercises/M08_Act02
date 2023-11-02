@@ -1,5 +1,6 @@
 package com.faunog.m08_act02_conectwithxampp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +17,7 @@ public class DatabaseViewer extends AppCompatActivity {
 
     }
 
-    private void toolbarNavigationFunction(){
+    private void toolbarNavigationFunction() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -25,6 +26,10 @@ public class DatabaseViewer extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }
