@@ -32,12 +32,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Código para permitir tráfico de red no seguro en versiones posteriores a Android P
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
         connectVariableWithElements();
         applyListenersToButtonLogin();
     }
