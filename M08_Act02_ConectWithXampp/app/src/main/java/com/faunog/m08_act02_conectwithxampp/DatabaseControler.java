@@ -1,6 +1,7 @@
 package com.faunog.m08_act02_conectwithxampp;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -11,9 +12,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ValidateUser {
+public class DatabaseControler {
 
-    public static CompletableFuture<String> validateAsync(String username, String password) {
+    static CompletableFuture<String> validateUser(String username, String password) {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
             String response = null;
@@ -58,6 +59,22 @@ public class ValidateUser {
             }
 
             return response;
+        }, miExecutor);
+    }
+
+    static CompletableFuture<Boolean> isDatabaseOk() {
+        Executor miExecutor = Executors.newSingleThreadExecutor();
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String url = "http://192.168.1.113"; // Reemplaza esto con la URL de tu base de datos
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("HEAD");
+                int responseCode = connection.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+                return false;
         }, miExecutor);
     }
 }
