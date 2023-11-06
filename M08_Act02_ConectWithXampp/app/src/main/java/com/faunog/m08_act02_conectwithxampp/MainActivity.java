@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         connectVariableWithElements();
         applyListenersToButtonLogin();
     }
+
     private void applyListenersToButtonLogin() {
         loginButton.setOnClickListener((v) -> {
             try {
@@ -84,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
             return "Username solo alfanumericos\na-z, A-Z, 0-9 o _";
         } else if (notBetween4And8digits(password)) {
             return "Contraseña: 4 a 8 digits\na-zA-Z0-9_-!¡*+,.@#€$%&?¿";
-        }
-        else if (networkNotAvailable()) {
-            return "No hay conectividad de red\nIntente de nuevo más tarde";
-        }
-        else if (databaseNotAvailable()) {
-            return "Base de Datos no disponible\nIntente de nuevo más tarde.";
+        } else if (networkNotAvailable()) {
+            return "No hay conectividad,Conecte a una red móvil o wi-fi";
+        } else if (serverNotAvailable()) {
+            return "Servidor no disponible,\nIntente de nuevo más tarde.";
+        } else if (databaseNotAvailable(username, password)) {
+            return "Base de Datos no disponible,\nIntente de nuevo más tarde.";
         }
         return "ok";
     }
@@ -137,13 +139,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean databaseNotAvailable() {
+    private boolean databaseNotAvailable(String user, String password) {
         try {
-            return !DatabaseControler.isDatabaseOk().get();
+            return !DatabaseControler.isMySQLRunning(user, password).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + e.getMessage());
         }
-            return true;
+        return true;
+
+    }
+
+    private boolean serverNotAvailable() {
+        try {
+            return !DatabaseControler.isServerRunning().get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e(TAG, "Error in serverNotAvailable:\n\n\n" + e.getMessage());
+        }
+        return true;
 
     }
 
@@ -151,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             return !isNetworkAvailable().get();
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error in networkNotAvailable:\n\n\n" + e.getMessage());
         }
-            return true;
+        return true;
     }
 
     private CompletableFuture<Boolean> isNetworkAvailable() {
@@ -179,4 +191,6 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
     }
+
+    private static final String TAG = "MainActivity";
 }
