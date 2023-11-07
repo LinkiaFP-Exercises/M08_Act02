@@ -47,14 +47,21 @@ public class MainActivity extends AppCompatActivity {
 
         return document;
     }
+    private SQLiteFailedAccounts sqLiteFailedAccounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createSQLiteFailedAccounts();
         connectVariableWithElements();
         applyListenersToButtonLogin();
+    }
+
+    private void createSQLiteFailedAccounts() {
+        sqLiteFailedAccounts = new SQLiteFailedAccounts(this);
+        sqLiteFailedAccounts.onCreate(sqLiteFailedAccounts.getWritableDatabase());
     }
 
     private void applyListenersToButtonLogin() {
@@ -185,7 +192,10 @@ public class MainActivity extends AppCompatActivity {
             CompletableFuture<String> response = DatabaseControler.validateUser(username, password);
             Document document = convertStringToXMLDocument(response.get());
             String responseStatus = catchStatusResponseFromXMLDocument(document);
-            OpenDatabaseViewer(responseStatus);
+            if (responseStatus.equals("ok"))
+                OpenDatabaseViewer(responseStatus);
+            else
+                ifUserAndPassNotOkSaveFailedAttempt(username, password);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -193,4 +203,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final String TAG = "MainActivity";
+
+    private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
+        boolean success = sqLiteFailedAccounts.saveFailedAttempt(username, password);
+        final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
+        if (success)
+            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
+        else
+            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
+
+    }
 }
