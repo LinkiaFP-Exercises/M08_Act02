@@ -1,19 +1,17 @@
 package com.faunog.m08_act02_conectwithxampp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.List;
 
 public class FailedAttemptsViewer extends AppCompatActivity {
 
     private ListView listView;
-    private List<FailedLogin> failedAttemptsList;
     private SQLiteFailedAccounts sqLiteFailedAccounts;
 
     @Override
@@ -51,7 +49,7 @@ public class FailedAttemptsViewer extends AppCompatActivity {
     }
 
     private void populateListView() {
-        failedAttemptsList = sqLiteFailedAccounts.getFailedAccounts();
+        List<FailedLogin> failedAttemptsList = sqLiteFailedAccounts.getFailedAccounts();
         FailedLoginAdapter adapter = new FailedLoginAdapter(this, failedAttemptsList);
         listView.setAdapter(adapter);
     }
