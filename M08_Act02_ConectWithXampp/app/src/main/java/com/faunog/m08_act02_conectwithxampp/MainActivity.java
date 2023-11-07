@@ -196,21 +196,33 @@ public class MainActivity extends AppCompatActivity {
     private void OpenDatabaseViewer(String validLoginUserAndPass) {
         // Si el usuario es válido, abrir la nueva actividad
         if (validLoginUserAndPass.equals("ok")) {
-            Intent intent = new Intent(this, DatabaseViewer.class);
-            startActivity(intent);
-            finish();
+            openActivityDatabaseViewer();
         } else {
             Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void openActivityDatabaseViewer() {
+        Intent intent = new Intent(this, DatabaseViewer.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
         boolean success = sqLiteFailedAccounts.saveFailedAttempt(username, password);
         final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
+
         if (success)
             Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
         else
             Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
 
+        openActivityFailedAttemptsViewer();
+    }
+
+    private void openActivityFailedAttemptsViewer() {
+        Intent intent = new Intent(this, FailedAttemptsViewer.class);
+        startActivity(intent);
+        finish();
     }
 }
