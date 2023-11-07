@@ -15,6 +15,20 @@
         android:background="@color/G3"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <!-- Resto de tu diseño aquí -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intentos Fallidos"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:padding="16dp"
+        tools:ignore="HardcodedText" />
+
+    <ListView
+        android:id="@+id/listViewFailedAttempts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="5dp"
+        tools:ignore="RtlSymmetry" />
 
 </LinearLayout>
