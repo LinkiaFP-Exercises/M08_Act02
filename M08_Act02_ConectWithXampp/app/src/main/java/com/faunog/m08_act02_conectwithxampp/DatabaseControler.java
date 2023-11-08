@@ -3,11 +3,16 @@ package com.faunog.m08_act02_conectwithxampp;
 import android.os.StrictMode;
 import android.util.Log;
 
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +23,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 public class DatabaseControler {
@@ -114,6 +123,56 @@ public class DatabaseControler {
             Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + Objects.requireNonNull(e.getMessage()));
         }
         return conn;
+    }
+
+    static CompletableFuture<Document> consultUsers() {
+        Executor miExecutor = Executors.newSingleThreadExecutor();
+        return CompletableFuture.supplyAsync(() -> {
+            Document document = null;
+            String url = "http://192.168.1.113/consultausuarios2.php";
+
+            try {
+                // Crear la conexión HTTP
+                URL direction = new URL(url);
+                HttpURLConnection connexion = (HttpURLConnection) direction.openConnection();
+                connexion.setRequestMethod("GET");
+                connexion.setDoOutput(true);
+
+                // Leer la respuesta del servidor
+                InputStream inputStream = connexion.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+
+                // Cerrar la conexión HTTP
+                inputStream.close();
+                connexion.disconnect();
+
+                // Convertir la respuesta a un documento XML
+                document = convertStringToXMLDocument(stringBuilder.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return document;
+        }, miExecutor);
+    }
+
+    private static Document convertStringToXMLDocument(String xmlString) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document = null;
+        try {
+            builder = factory.newDocumentBuilder();
+            document = builder.parse(new InputSource(new StringReader(xmlString)));
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return document;
     }
 
     private static final String TAG = "DatabaseControler";

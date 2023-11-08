@@ -2,11 +2,16 @@ package com.faunog.m08_act02_conectwithxampp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TableLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.List;
+
 public class DatabaseViewer extends AppCompatActivity {
+
+    private TableLayout tableLayoutUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +19,8 @@ public class DatabaseViewer extends AppCompatActivity {
         setContentView(R.layout.activity_database_viewer);
 
         toolbarNavigationFunction();
+        connectVariableWithElements();
+        fetchAndPopulateUsers();
 
     }
 
@@ -22,6 +29,7 @@ public class DatabaseViewer extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -32,4 +40,17 @@ public class DatabaseViewer extends AppCompatActivity {
             finish();
         });
     }
+
+    private void connectVariableWithElements() {
+        tableLayoutUsers = findViewById(R.id.tableLayoutUsers);
+    }
+
+    private void fetchAndPopulateUsers() {
+        DatabaseControler.consultUsers()
+                .thenAccept(document -> {
+                    List<UsuariosMySQL> usuariosMySQLList = XMLConverter.convertXMLtoUsuariosMySQL(document);
+                    XMLConverter.populateTableLayoutUsers(tableLayoutUsers, usuariosMySQLList);
+                });
+    }
+
 }
