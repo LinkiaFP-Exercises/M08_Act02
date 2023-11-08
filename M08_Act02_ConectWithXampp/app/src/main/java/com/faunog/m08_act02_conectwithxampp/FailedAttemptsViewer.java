@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,6 +27,7 @@ public class FailedAttemptsViewer extends AppCompatActivity {
         toolbarNavigationFunction();
         connectVariableWithElements();
         populateListView();
+        showToastUserOrPassInvalid();
     }
 
     private void toolbarNavigationFunction() {
@@ -70,5 +72,9 @@ public class FailedAttemptsViewer extends AppCompatActivity {
 
             tableLayoutFailedAttempts.addView(row);
         }
+    }
+
+    private void showToastUserOrPassInvalid(){
+        Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
     }
 }
