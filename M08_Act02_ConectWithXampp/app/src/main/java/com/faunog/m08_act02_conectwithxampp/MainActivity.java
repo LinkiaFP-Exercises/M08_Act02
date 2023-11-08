@@ -1,9 +1,6 @@
 package com.faunog.m08_act02_conectwithxampp;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -147,16 +144,10 @@ public class MainActivity extends AppCompatActivity {
     private void OpenDatabaseViewer(String validLoginUserAndPass) {
         // Si el usuario es válido, abrir la nueva actividad
         if (validLoginUserAndPass.equals("ok")) {
-            openActivityDatabaseViewer();
+            OpenActivities.databaseViewer(this);
         } else {
             Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void openActivityDatabaseViewer() {
-        Intent intent = new Intent(this, DatabaseViewer.class);
-        startActivity(intent);
-        finish();
     }
 
     private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
@@ -166,12 +157,7 @@ public class MainActivity extends AppCompatActivity {
         if (success) Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
         else Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
 
-        openActivityFailedAttemptsViewer();
+        OpenActivities.failedAttemptsViewer(this);
     }
 
-    private void openActivityFailedAttemptsViewer() {
-        Intent intent = new Intent(this, FailedAttemptsViewer.class);
-        startActivity(intent);
-        finish();
-    }
 }
