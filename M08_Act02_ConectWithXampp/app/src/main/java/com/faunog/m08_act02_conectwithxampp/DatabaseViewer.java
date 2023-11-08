@@ -44,13 +44,16 @@ public class DatabaseViewer extends AppCompatActivity {
 
     private void fetchAndPopulateTableLayoutUsers() {
         DatabaseControler.consultUsers().thenAccept(document -> {
-            XMLConverter.convertXMLtoUsuariosMySQL(document).forEach(this::convertUsuariosMySQLinRow);
+            XMLConverter.convertXMLtoUsuariosMySQL(document)
+                    .forEach(this::convertUsuariosMySQLinRow);
         });
 
     }
 
     private void convertUsuariosMySQLinRow(UsuariosMySQL usuario) {
-        @SuppressLint("InflateParams") TableRow row = (TableRow) LayoutInflater.from(tableLayoutUsers.getContext()).inflate(R.layout.item_row_table_layout, null);
+        @SuppressLint("InflateParams")
+        TableRow row = (TableRow) LayoutInflater.from(this)
+                .inflate(R.layout.item_row_table_layout, null);
 
         TextView usernameTextView = row.findViewById(R.id.username);
         TextView passwordTextView = row.findViewById(R.id.password);
