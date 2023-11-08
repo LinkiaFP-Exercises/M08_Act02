@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         if (isLoginSuccessful(response)) {
             DatabaseControler.validateUser(response).thenAccept(responseStatus -> {
                 if (responseStatus.equals("ok")) OpenActivities.databaseViewer(this);
-                else ifUserAndPassNotOkSaveFailedAttempt(response);
+                else sqLiteManager.ifUserAndPassNotOkSaveFailedAttempt(response, this);
             });
         }
     }
@@ -60,15 +60,5 @@ public class MainActivity extends AppCompatActivity {
     private void handleException(Exception e) {
         Log.e(TAG, "Error in applyListenersToButtonLogin:\n\n\n" + e.getMessage());
         throw new RuntimeException(e);
-    }
-
-    private void ifUserAndPassNotOkSaveFailedAttempt(String[] statusUserPass) {
-        boolean success = sqLiteManager.saveFailedAttempt(statusUserPass[1], statusUserPass[2]);
-        final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
-
-        if (success) Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
-        else Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
-
-        OpenActivities.failedAttemptsViewer(this);
     }
 }

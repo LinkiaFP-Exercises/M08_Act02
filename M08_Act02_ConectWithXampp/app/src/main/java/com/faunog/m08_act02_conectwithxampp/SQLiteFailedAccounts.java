@@ -88,4 +88,13 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
         return sqLiteFailedAccounts;
     }
 
+    public void ifUserAndPassNotOkSaveFailedAttempt(String[] statusUserPass, Context context) {
+        boolean success = saveFailedAttempt(statusUserPass[1], statusUserPass[2]);
+        final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
+
+        if (success) Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
+        else Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
+
+        OpenActivities.failedAttemptsViewer(context);
+    }
 }
