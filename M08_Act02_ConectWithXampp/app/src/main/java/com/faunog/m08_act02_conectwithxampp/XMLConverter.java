@@ -1,5 +1,7 @@
 package com.faunog.m08_act02_conectwithxampp;
 
+import android.util.Log;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -17,19 +19,17 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class XMLConverter {
 
-
     public static Document convertStringToXMLDocument(String xmlString) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document document = null;
         try {
-            builder = factory.newDocumentBuilder();
-            document = builder.parse(new InputSource(new StringReader(xmlString)));
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.parse(new InputSource(new StringReader(xmlString)));
         } catch (ParserConfigurationException | IOException | SAXException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error in convertStringToXMLDocument:\n\n\n" + e.getMessage());
+            return null;
         }
-        return document;
     }
+
 
     public static String catchStatusResponseFromXMLDocument(Document document) {
         NodeList listaItem = (NodeList) document.getElementsByTagName("respuesta");
@@ -56,5 +56,7 @@ public class XMLConverter {
 
         return usuariosMySQLList;
     }
+
+    private static final String TAG = "XMLConverter";
 }
 
