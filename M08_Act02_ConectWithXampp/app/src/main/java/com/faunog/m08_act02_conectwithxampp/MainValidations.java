@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
