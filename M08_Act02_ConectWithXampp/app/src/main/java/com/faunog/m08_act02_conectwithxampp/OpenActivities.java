@@ -18,7 +18,7 @@ public class OpenActivities {
         context.startActivity(intent);
     }
     public static void mainViewer(Context context) {
-        Intent intent = new Intent(context, FailedAttemptsViewer.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
