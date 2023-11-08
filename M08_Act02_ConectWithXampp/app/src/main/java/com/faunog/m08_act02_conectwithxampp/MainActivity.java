@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,29 +46,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleResponse(String[] response) {
         if (response[0].equals("ok")) {
-            connectThenOpenDatabaseViewer(response[1], response[2]);
+            DatabaseControler.validateUser(response[1], response[2]).thenAccept(responseStatus -> {
+                if (responseStatus.equals("ok")) OpenActivities.databaseViewer(this);
+                else ifUserAndPassNotOkSaveFailedAttempt(response[1], response[2]);
+            });
         }
     }
 
     private void handleException(Exception e) {
         Log.e(TAG, "Error in applyListenersToButtonLogin:\n\n\n" + e.getMessage());
         throw new RuntimeException(e);
-    }
-
-    private void connectThenOpenDatabaseViewer(String username, String password) {
-        DatabaseControler.validateUser(username, password).thenAccept(responseStatus -> {
-            if (responseStatus.equals("ok")) OpenDatabaseViewer(responseStatus);
-            else ifUserAndPassNotOkSaveFailedAttempt(username, password);
-        });
-    }
-
-    private void OpenDatabaseViewer(String validLoginUserAndPass) {
-        // Si el usuario es válido, abrir la nueva actividad
-        if (validLoginUserAndPass.equals("ok")) {
-            OpenActivities.databaseViewer(this);
-        } else {
-            Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
