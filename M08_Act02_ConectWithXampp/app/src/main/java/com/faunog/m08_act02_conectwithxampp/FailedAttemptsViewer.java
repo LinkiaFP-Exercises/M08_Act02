@@ -40,11 +40,7 @@ public class FailedAttemptsViewer extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbar.setNavigationOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        OpenActivities.toolbarGoToMainViewer(toolbar, this);
     }
 
     private void createSQLiteFailedAccounts() {
