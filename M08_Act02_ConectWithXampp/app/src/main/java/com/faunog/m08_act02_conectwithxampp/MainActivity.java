@@ -33,28 +33,28 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
-
-    private static Document convertStringToXMLDocument(String xmlString) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document document = null;
-        try {
-            builder = factory.newDocumentBuilder();
-            document = builder.parse(new InputSource(new StringReader(xmlString)));
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
-
-        return document;
-    }
+    private SQLiteFailedAccounts sqLiteFailedAccounts;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createSQLiteFailedAccounts();
         connectVariableWithElements();
         applyListenersToButtonLogin();
+    }
+
+    private void createSQLiteFailedAccounts() {
+        sqLiteFailedAccounts = new SQLiteFailedAccounts(this);
+        sqLiteFailedAccounts.onCreate(sqLiteFailedAccounts.getWritableDatabase());
+    }
+
+    private void connectVariableWithElements() {
+        usernameEditText = findViewById(R.id.login_user);
+        passwordEditText = findViewById(R.id.login_password);
+        loginButton = findViewById(R.id.login_button);
     }
 
     private void applyListenersToButtonLogin() {
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleException(Exception e) {
-        e.printStackTrace();
+        Log.e(TAG, "Error in applyListenersToButtonLogin:\n\n\n" + e.getMessage());
         throw new RuntimeException(e);
     }
 
@@ -116,29 +116,6 @@ public class MainActivity extends AppCompatActivity {
         return input == null || input.length() < 4 || input.length() > 8 || !input.matches(regexPassword);
     }
 
-    private void connectVariableWithElements() {
-        usernameEditText = findViewById(R.id.login_user);
-        passwordEditText = findViewById(R.id.login_password);
-        loginButton = findViewById(R.id.login_button);
-    }
-
-    private String catchStatusResponseFromXMLDocument(Document document) {
-        NodeList listaItem = (NodeList) document.getElementsByTagName("respuesta");
-        Element element = (Element) listaItem.item(0);
-        return element.getElementsByTagName("estado").item(0).getTextContent();
-    }
-
-    private void OpenDatabaseViewer(String usuarioValido) {
-        // Si el usuario es válido, abrir la nueva actividad
-        if (usuarioValido.equals("ok")) {
-            Intent intent = new Intent(this, DatabaseViewer.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private boolean databaseNotAvailable(String user, String password) {
         try {
             return !DatabaseControler.isMySQLRunning(user, password).get();
@@ -146,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + e.getMessage());
         }
         return true;
-
     }
 
     private boolean serverNotAvailable() {
@@ -156,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Error in serverNotAvailable:\n\n\n" + e.getMessage());
         }
         return true;
-
     }
 
     private boolean networkNotAvailable() {
@@ -171,10 +146,14 @@ public class MainActivity extends AppCompatActivity {
     private CompletableFuture<Boolean> isNetworkAvailable() {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connectivityManager != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+                NetworkCapabilities capabilities =
+                        connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                return capabilities != null &&
+                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
             }
             return false;
         }, miExecutor);
@@ -185,12 +164,65 @@ public class MainActivity extends AppCompatActivity {
             CompletableFuture<String> response = DatabaseControler.validateUser(username, password);
             Document document = convertStringToXMLDocument(response.get());
             String responseStatus = catchStatusResponseFromXMLDocument(document);
-            OpenDatabaseViewer(responseStatus);
+            if (responseStatus.equals("ok"))
+                OpenDatabaseViewer(responseStatus);
+            else
+                ifUserAndPassNotOkSaveFailedAttempt(username, password);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    private static final String TAG = "MainActivity";
+    private static Document convertStringToXMLDocument(String xmlString) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document = null;
+        try {
+            builder = factory.newDocumentBuilder();
+            document = builder.parse(new InputSource(new StringReader(xmlString)));
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return document;
+    }
+
+    private String catchStatusResponseFromXMLDocument(Document document) {
+        NodeList listaItem = (NodeList) document.getElementsByTagName("respuesta");
+        Element element = (Element) listaItem.item(0);
+        return element.getElementsByTagName("estado").item(0).getTextContent();
+    }
+
+    private void OpenDatabaseViewer(String validLoginUserAndPass) {
+        // Si el usuario es válido, abrir la nueva actividad
+        if (validLoginUserAndPass.equals("ok")) {
+            openActivityDatabaseViewer();
+        } else {
+            Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openActivityDatabaseViewer() {
+        Intent intent = new Intent(this, DatabaseViewer.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
+        boolean success = sqLiteFailedAccounts.saveFailedAttempt(username, password);
+        final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
+
+        if (success)
+            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
+        else
+            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
+
+        openActivityFailedAttemptsViewer();
+    }
+
+    private void openActivityFailedAttemptsViewer() {
+        Intent intent = new Intent(this, FailedAttemptsViewer.class);
+        startActivity(intent);
+        finish();
+    }
 }
