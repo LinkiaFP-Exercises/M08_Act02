@@ -1,7 +1,6 @@
 package com.faunog.m08_act02_conectwithxampp;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.TableLayout;
@@ -11,8 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import java.util.List;
 
 public class FailedAttemptsViewer extends AppCompatActivity {
 
@@ -26,7 +23,7 @@ public class FailedAttemptsViewer extends AppCompatActivity {
         createSQLiteFailedAccounts();
         toolbarNavigationFunction();
         connectVariableWithElements();
-        populateListView();
+        populateTableLayout();
         showToastUserOrPassInvalid();
     }
 
@@ -51,26 +48,28 @@ public class FailedAttemptsViewer extends AppCompatActivity {
         tableLayoutFailedAttempts = findViewById(R.id.tableLayoutFailedAttempts);
     }
 
-    private void populateListView() {
-        List<FailedLogin> failedAttemptsList = sqLiteFailedAccounts.getFailedAccounts();
-        for (FailedLogin failedLogin : failedAttemptsList) {
-            @SuppressLint("InflateParams")
-            TableRow row = (TableRow) LayoutInflater.from(this)
-                    .inflate(R.layout.item_row_table_layout, null);
+    private void populateTableLayout() {
+        sqLiteFailedAccounts.getFailedAccounts().forEach(this::convertFailedLoginInRow);
 
-            TextView usernameTextView = row.findViewById(R.id.username);
-            TextView passwordTextView = row.findViewById(R.id.password);
-            TextView dateTimeTextView = row.findViewById(R.id.dateTime);
-
-            usernameTextView.setText(failedLogin.username());
-            passwordTextView.setText(failedLogin.password());
-            dateTimeTextView.setText(failedLogin.dateTime());
-
-            tableLayoutFailedAttempts.addView(row);
-        }
     }
 
-    private void showToastUserOrPassInvalid(){
+    private void convertFailedLoginInRow(FailedLogin failedLogin) {
+        @SuppressLint("InflateParams")
+        TableRow row = (TableRow) LayoutInflater.from(this)
+                .inflate(R.layout.item_row_table_layout, null);
+
+        TextView usernameTextView = row.findViewById(R.id.username);
+        TextView passwordTextView = row.findViewById(R.id.password);
+        TextView dateTimeTextView = row.findViewById(R.id.dateTime);
+
+        usernameTextView.setText(failedLogin.username());
+        passwordTextView.setText(failedLogin.password());
+        dateTimeTextView.setText(failedLogin.dateTime());
+
+        tableLayoutFailedAttempts.addView(row);
+    }
+
+    private void showToastUserOrPassInvalid() {
         Toast.makeText(this, "Usuario o contraseña inválidos", Toast.LENGTH_SHORT).show();
     }
 }
