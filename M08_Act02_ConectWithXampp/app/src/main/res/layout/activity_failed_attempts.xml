@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradiente_failed_login"
     android:orientation="vertical"
     tools:context=".DatabaseViewer">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
+        style="@style/TransparentToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/G3"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <TextView
@@ -21,6 +22,7 @@
         android:gravity="center"
         android:padding="16dp"
         android:text="Intentos Fallidos"
+        android:textColor="@color/l3"
         android:textSize="24sp"
         tools:ignore="HardcodedText" />
 
@@ -49,7 +51,8 @@
                     android:padding="5dp"
                     android:text="Username"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textColor="@color/A1"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/password_title"
@@ -60,7 +63,8 @@
                     android:padding="5dp"
                     android:text="Password"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textColor="@color/A1"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/dateTime_title"
@@ -71,7 +75,8 @@
                     android:padding="5dp"
                     android:text="DateTime"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textColor="@color/A1"
+                    android:textStyle="normal" />
             </TableRow>
         </TableLayout>
     </ScrollView>
