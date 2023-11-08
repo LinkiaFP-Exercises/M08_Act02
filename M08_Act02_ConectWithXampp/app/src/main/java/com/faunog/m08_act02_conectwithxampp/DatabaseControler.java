@@ -1,6 +1,5 @@
 package com.faunog.m08_act02_conectwithxampp;
 
-import android.os.StrictMode;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -16,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -31,12 +29,12 @@ public class DatabaseControler {
                 String url = "http://192.168.1.113";
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setRequestMethod("HEAD");
-                connection.setConnectTimeout(3000);
-                connection.setReadTimeout(3000);
+                connection.setConnectTimeout(1000);
+                connection.setReadTimeout(1000);
                 final int responseCode = connection.getResponseCode();
                 return responseCode == HttpURLConnection.HTTP_OK;
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error in isServerRunning:\n\n\n" + e.getMessage());
                 return false;
             }
         }, miExecutor);
@@ -46,29 +44,26 @@ public class DatabaseControler {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
             try {
-                return connectDatabase(user, password).isValid(100);
-            } catch (SQLException e) {
-                System.err.println("FUE ESO:\n\n\n\n\n\n" + e.getErrorCode());
+                Connection connection = connectDatabase(user, password);
+                return connection != null && connection.isValid(100);
+            } catch (SQLException | ClassNotFoundException e) {
+                Log.e(TAG, "Error in isMySQLRunning:\n\n\n" + e.getMessage());
                 return false;
             }
         }, miExecutor);
     }
 
-    private static Connection connectDatabase(String user, String password) {
+    private static Connection connectDatabase(String user, String password) throws SQLException, ClassNotFoundException {
         final String urlJDBC = "jdbc:mysql://192.168.1.113:3307/m08_act02";
-        final String class_jdbc = "com.mysql.jdbc.Driver";
+        final String classJDBC = "com.mysql.jdbc.Driver";
+        Connection conn;
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        Connection conn = null;
-        try {
-            Class.forName(class_jdbc);
-            conn = DriverManager.getConnection(urlJDBC, user, password);
-        } catch (Exception e) {
-            Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + Objects.requireNonNull(e.getMessage()));
-        }
+        Class.forName(classJDBC);
+        conn = DriverManager.getConnection(urlJDBC, user, password);
+
         return conn;
     }
+
 
     static CompletableFuture<String> validateUser(String[] statusUserPass) {
         Executor miExecutor = Executors.newSingleThreadExecutor();
@@ -77,83 +72,86 @@ public class DatabaseControler {
             String url = "http://192.168.1.113/validacuenta2.php";
 
             try {
-                // Crear la conexion HTTP
-                URL direction = new URL(url);
-                HttpURLConnection connexion = (HttpURLConnection) direction.openConnection();
-                connexion.setRequestMethod("POST");
-                connexion.setDoOutput(true);
-
-                // Crear los datos del formulario
-                String datos = "usuario=" + statusUserPass[1] + "&contrasena=" + statusUserPass[2];
-
-                // Escribir los datos del formulario en la solicitud HTTP
-                OutputStream outputStream = connexion.getOutputStream();
-                byte[] bytes = datos.getBytes(StandardCharsets.UTF_8);
-                outputStream.write(bytes);
-                outputStream.flush();
-                outputStream.close();
-
-                // Leer la respuesta del servidor
-                InputStream inputStream = connexion.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-
-                // Cerrar la conexión HTTP
-                inputStream.close();
-                connexion.disconnect();
-
-
-                // Procesar la respuesta del servidor
-                Document document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
-                response = XMLConverter.catchStatusResponseFromXMLDocument(document);
+                HttpURLConnection connection = createHTTPConnection(url);
+                sendDataToServer(connection, statusUserPass);
+                response = processServerResponse(connection);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error in validateUser:\n\n\n" + e.getMessage());
             }
 
             return response;
         }, miExecutor);
     }
 
+    private static HttpURLConnection createHTTPConnection(String url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        return connection;
+    }
+
+    private static void sendDataToServer(HttpURLConnection connection, String[] statusUserPass) throws IOException {
+        String datos = "usuario=" + statusUserPass[1] + "&contrasena=" + statusUserPass[2];
+        OutputStream outputStream = connection.getOutputStream();
+        byte[] bytes = datos.getBytes(StandardCharsets.UTF_8);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    private static String processServerResponse(HttpURLConnection connection) throws IOException {
+        String response;
+        InputStream inputStream = connection.getInputStream();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+
+        inputStream.close();
+        connection.disconnect();
+
+        Document document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
+        response = XMLConverter.catchStatusResponseFromXMLDocument(document);
+
+        return response;
+    }
+
     static CompletableFuture<Document> consultUsers() {
         Executor miExecutor = Executors.newSingleThreadExecutor();
-        return CompletableFuture.supplyAsync(() -> {
-            Document document = null;
-            String url = "http://192.168.1.113/consultausuarios2.php";
+        return CompletableFuture.supplyAsync(DatabaseControler::createHTTPGetRequest, miExecutor);
+    }
 
-            try {
-                // Crear la conexión HTTP
-                URL direction = new URL(url);
-                HttpURLConnection connexion = (HttpURLConnection) direction.openConnection();
-                connexion.setRequestMethod("GET");
-                connexion.setDoOutput(true);
+    private static Document createHTTPGetRequest() {
+        Document document = null;
+        try {
+            HttpURLConnection connection = createHTTPConnection("http://192.168.1.113/consultausuarios2.php");
+            document = readServerResponse(connection);
+        } catch (IOException e) {
+            Log.e(TAG, "Error in createHTTPGetRequest:\n\n\n" + e.getMessage());
+        }
+        return document;
+    }
 
-                // Leer la respuesta del servidor
-                InputStream inputStream = connexion.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
+    private static Document readServerResponse(HttpURLConnection connection) throws IOException {
+        Document document;
+        InputStream inputStream = connection.getInputStream();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
 
-                // Cerrar la conexión HTTP
-                inputStream.close();
-                connexion.disconnect();
+        inputStream.close();
+        connection.disconnect();
 
-                // Convertir la respuesta a un documento XML
-                document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
 
-            return document;
-        }, miExecutor);
+        return document;
     }
 
     private static final String TAG = "DatabaseControler";
