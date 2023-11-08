@@ -41,28 +41,37 @@ public class XMLConverter {
             return null;
         }
     }
-
-
+    
     public static List<UsuariosMySQL> convertXMLtoUsuariosMySQL(Document document) {
         List<UsuariosMySQL> usuariosMySQLList = new ArrayList<>();
 
         if (document != null) {
             NodeList usuariosList = document.getElementsByTagName("usuario");
-
             for (int i = 0; i < usuariosList.getLength(); i++) {
                 Element usuario = (Element) usuariosList.item(i);
 
-                String nombre = usuario.getElementsByTagName("nombre").item(0).getTextContent();
-                String contrasena = usuario.getElementsByTagName("contrasena").item(0).getTextContent();
-                String fechaNacimiento = usuario.getElementsByTagName("fecha_nacimiento").item(0).getTextContent();
+                try {
+                    String nombre = getElementTextContent(usuario, "nombre");
+                    String contrasena = getElementTextContent(usuario, "contrasena");
+                    String fechaNacimiento = getElementTextContent(usuario, "fecha_nacimiento");
 
-                usuariosMySQLList.add(new UsuariosMySQL(nombre, contrasena, fechaNacimiento));
+                    usuariosMySQLList.add(new UsuariosMySQL(nombre, contrasena, fechaNacimiento));
+                } catch (NullPointerException | DOMException e) {
+                    Log.e(TAG, "Error in convertXMLtoUsuariosMySQL:\n\n\n" + e.getMessage());
+                }
             }
         }
-
         return usuariosMySQLList;
+    }
+
+    private static String getElementTextContent(Element element, String tagName) {
+        try {
+            return element.getElementsByTagName(tagName).item(0).getTextContent();
+        } catch (NullPointerException | DOMException e) {
+            Log.e(TAG, "Error in getElementTextContent:\n\n\n" + e.getMessage());
+            return "";
+        }
     }
 
     private static final String TAG = "XMLConverter";
 }
-
