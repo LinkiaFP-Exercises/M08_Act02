@@ -13,9 +13,7 @@ public class MainValidations {
 
     private static final String TAG = "MainActivity";
 
-    public String[] ifHasTheNecessaryToConnect(EditText usernameEditText, EditText passwordEditText, Context context) {
-        final String username = usernameEditText.getText().toString().trim();
-        final String password = passwordEditText.getText().toString().trim();
+    public String[] ifHasTheNecessaryToConnect(String username, String password, Context context) {
 
         String messageStatus = validateCredentials(username, password, context);
 

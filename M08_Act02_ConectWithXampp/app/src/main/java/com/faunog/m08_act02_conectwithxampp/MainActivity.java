@@ -1,7 +1,6 @@
 package com.faunog.m08_act02_conectwithxampp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -11,9 +10,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
-    private MainValidations valid;
-    private SQLiteFailedAccounts sqLiteManager;
-    private static final String TAG = "MainActivity";
+    private MainLoginManager mainLoginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +24,7 @@ public class MainActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.login_user);
         passwordEditText = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
-        sqLiteManager = SQLiteFailedAccounts.createManager(this);
-        valid = new MainValidations();
+        mainLoginManager = new MainLoginManager(this);
     }
 
     private void applyListenersToButtonLogin() {
@@ -36,29 +32,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void tryLogin() {
-        try {
-            final String[] response = valid.ifHasTheNecessaryToConnect(usernameEditText, passwordEditText, this);
-            handleResponse(response);
-        } catch (Exception e) {
-            handleException(e);
-        }
+        mainLoginManager.login(usernameEditText, passwordEditText);
     }
 
-    private void handleResponse(String[] response) {
-        if (isLoginSuccessful(response)) {
-            DatabaseControler.validateUser(response).thenAccept(responseStatus -> {
-                if (responseStatus.equals("ok")) OpenActivities.databaseViewer(this);
-                else sqLiteManager.ifUserAndPassNotOkSaveFailedAttempt(response, this);
-            });
-        }
-    }
-
-    private boolean isLoginSuccessful(String[] response) {
-        return response[0].equals("ok");
-    }
-
-    private void handleException(Exception e) {
-        Log.e(TAG, "Error in applyListenersToButtonLogin:\n\n\n" + e.getMessage());
-        throw new RuntimeException(e);
-    }
 }
