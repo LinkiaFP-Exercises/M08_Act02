@@ -12,22 +12,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -160,37 +148,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connectThenOpenDatabaseViewer(String username, String password) {
-        try {
-            CompletableFuture<String> response = DatabaseControler.validateUser(username, password);
-            Document document = convertStringToXMLDocument(response.get());
-            String responseStatus = catchStatusResponseFromXMLDocument(document);
-            if (responseStatus.equals("ok"))
-                OpenDatabaseViewer(responseStatus);
-            else
-                ifUserAndPassNotOkSaveFailedAttempt(username, password);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Document convertStringToXMLDocument(String xmlString) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document document = null;
-        try {
-            builder = factory.newDocumentBuilder();
-            document = builder.parse(new InputSource(new StringReader(xmlString)));
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
-        return document;
-    }
-
-    private String catchStatusResponseFromXMLDocument(Document document) {
-        NodeList listaItem = (NodeList) document.getElementsByTagName("respuesta");
-        Element element = (Element) listaItem.item(0);
-        return element.getElementsByTagName("estado").item(0).getTextContent();
+        DatabaseControler.validateUser(username, password)
+                .thenAccept(responseStatus -> {
+                    if (responseStatus.equals("ok"))
+                        OpenDatabaseViewer(responseStatus);
+                    else
+                        ifUserAndPassNotOkSaveFailedAttempt(username, password);
+                });
     }
 
     private void OpenDatabaseViewer(String validLoginUserAndPass) {
