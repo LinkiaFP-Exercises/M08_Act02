@@ -51,7 +51,7 @@
                     android:padding="5dp"
                     android:text="Username"
                     android:textAlignment="center"
-                    android:textColor="@color/A1"
+                    android:textColor="@color/Z1"
                     android:textStyle="normal" />
 
                 <TextView
@@ -63,7 +63,7 @@
                     android:padding="5dp"
                     android:text="Password"
                     android:textAlignment="center"
-                    android:textColor="@color/A1"
+                    android:textColor="@color/Z1"
                     android:textStyle="normal" />
 
                 <TextView
@@ -75,7 +75,7 @@
                     android:padding="5dp"
                     android:text="DateTime"
                     android:textAlignment="center"
-                    android:textColor="@color/A1"
+                    android:textColor="@color/Z1"
                     android:textStyle="normal" />
             </TableRow>
         </TableLayout>
