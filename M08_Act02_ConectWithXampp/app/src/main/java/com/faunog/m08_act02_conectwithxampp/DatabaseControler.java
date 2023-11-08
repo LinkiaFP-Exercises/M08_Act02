@@ -70,7 +70,7 @@ public class DatabaseControler {
         return conn;
     }
 
-    static CompletableFuture<String> validateUser(String username, String password) {
+    static CompletableFuture<String> validateUser(String[] statusUserPass) {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
             String response = null;
@@ -84,7 +84,7 @@ public class DatabaseControler {
                 connexion.setDoOutput(true);
 
                 // Crear los datos del formulario
-                String datos = "usuario=" + username + "&contrasena=" + password;
+                String datos = "usuario=" + statusUserPass[1] + "&contrasena=" + statusUserPass[2];
 
                 // Escribir los datos del formulario en la solicitud HTTP
                 OutputStream outputStream = connexion.getOutputStream();

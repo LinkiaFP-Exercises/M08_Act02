@@ -7,16 +7,13 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class MainValidations {
 
     private static final String TAG = "MainActivity";
 
-    public String[] ifHasTheNecessaryToConnect(EditText usernameEditText, EditText passwordEditText, Context context) throws ExecutionException, InterruptedException {
+    public String[] ifHasTheNecessaryToConnect(EditText usernameEditText, EditText passwordEditText, Context context) {
         final String username = usernameEditText.getText().toString().trim();
         final String password = passwordEditText.getText().toString().trim();
 
@@ -30,21 +27,27 @@ public class MainValidations {
     }
 
     private String validateCredentials(String username, String password, Context context) {
-        if (notAlphanumeric_NotNull(username)) {
+        if (notAlphanumeric(username)) {
             return "Username solo alfanumericos\na-z, A-Z, 0-9 o _";
         } else if (notBetween4And8digits(password)) {
-            return "Contraseña: 4 a 8 digits\na-zA-Z0-9_-!¡*+,.@#€$%&?¿";
-        } else if (networkNotAvailable(context)) {
-            return "No hay conectividad,Conecte a una red móvil o wi-fi";
-        } else if (serverNotAvailable()) {
-            return "Servidor no disponible,\nIntente de nuevo más tarde.";
-        } else if (databaseNotAvailable(username, password)) {
-            return "Base de Datos no disponible,\nIntente de nuevo más tarde.";
+            return "Contraseña: 4 a 8 dígitos\na-zA-Z0-9_-!¡*+,.@#€$%&?¿";
+        } else if (!isNetworkAvailable(context)) {
+            return "No hay conectividad, conecte a una red móvil o Wi-Fi";
+        } else {
+            try {
+                if (!DatabaseControler.isServerRunning().get()) {
+                    return "Servidor no disponible, intente de nuevo más tarde.";
+                } else if (!DatabaseControler.isMySQLRunning(username, password).get()) {
+                    return "Base de datos no disponible, intente de nuevo más tarde.";
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                handleException(e);
+            }
         }
         return "ok";
     }
 
-    private boolean notAlphanumeric_NotNull(String input) {
+    private boolean notAlphanumeric(String input) {
         return input == null || !input.matches("\\w+");
     }
 
@@ -53,42 +56,17 @@ public class MainValidations {
         return input == null || input.length() < 4 || input.length() > 8 || !input.matches(regexPassword);
     }
 
-    private boolean databaseNotAvailable(String user, String password) {
-        try {
-            return !DatabaseControler.isMySQLRunning(user, password).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + e.getMessage());
+    private static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+            return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
         }
-        return true;
+        return false;
     }
 
-    private boolean serverNotAvailable() {
-        try {
-            return !DatabaseControler.isServerRunning().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, "Error in serverNotAvailable:\n\n\n" + e.getMessage());
-        }
-        return true;
-    }
-
-    private boolean networkNotAvailable(Context context) {
-        try {
-            return !isNetworkAvailable(context).get();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e(TAG, "Error in networkNotAvailable:\n\n\n" + e.getMessage());
-        }
-        return true;
-    }
-
-    private static CompletableFuture<Boolean> isNetworkAvailable(Context context) {
-        Executor miExecutor = Executors.newSingleThreadExecutor();
-        return CompletableFuture.supplyAsync(() -> {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connectivityManager != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-            return false;
-        }, miExecutor);
+    private void handleException(Exception e) {
+        Log.e(TAG, "Error in validateCredentials:\n\n\n" + e.getMessage());
+        throw new RuntimeException(e);
     }
 }

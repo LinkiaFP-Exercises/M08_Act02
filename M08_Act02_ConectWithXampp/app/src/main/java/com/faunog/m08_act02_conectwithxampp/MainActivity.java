@@ -7,8 +7,6 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.concurrent.ExecutionException;
-
 public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
@@ -34,23 +32,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void applyListenersToButtonLogin() {
-        loginButton.setOnClickListener((v) -> {
-            try {
-                final String[] response = valid.ifHasTheNecessaryToConnect(usernameEditText, passwordEditText, this);
-                handleResponse(response);
-            } catch (ExecutionException | InterruptedException e) {
-                handleException(e);
-            }
-        });
+        loginButton.setOnClickListener((v) -> tryLogin());
+    }
+
+    private void tryLogin() {
+        try {
+            final String[] response = valid.ifHasTheNecessaryToConnect(usernameEditText, passwordEditText, this);
+            handleResponse(response);
+        } catch (Exception e) {
+            handleException(e);
+        }
     }
 
     private void handleResponse(String[] response) {
-        if (response[0].equals("ok")) {
-            DatabaseControler.validateUser(response[1], response[2]).thenAccept(responseStatus -> {
+        if (isLoginSuccessful(response)) {
+            DatabaseControler.validateUser(response).thenAccept(responseStatus -> {
                 if (responseStatus.equals("ok")) OpenActivities.databaseViewer(this);
-                else ifUserAndPassNotOkSaveFailedAttempt(response[1], response[2]);
+                else ifUserAndPassNotOkSaveFailedAttempt(response);
             });
         }
+    }
+
+    private boolean isLoginSuccessful(String[] response) {
+        return response[0].equals("ok");
     }
 
     private void handleException(Exception e) {
@@ -58,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
         throw new RuntimeException(e);
     }
 
-    private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
-        boolean success = sqLiteManager.saveFailedAttempt(username, password);
+    private void ifUserAndPassNotOkSaveFailedAttempt(String[] statusUserPass) {
+        boolean success = sqLiteManager.saveFailedAttempt(statusUserPass[1], statusUserPass[2]);
         final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
 
         if (success) Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
@@ -67,5 +71,4 @@ public class MainActivity extends AppCompatActivity {
 
         OpenActivities.failedAttemptsViewer(this);
     }
-
 }
