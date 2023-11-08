@@ -57,7 +57,8 @@ public class FailedAttemptsViewer extends AppCompatActivity {
         List<FailedLogin> failedAttemptsList = sqLiteFailedAccounts.getFailedAccounts();
         for (FailedLogin failedLogin : failedAttemptsList) {
             @SuppressLint("InflateParams")
-            TableRow row = (TableRow) LayoutInflater.from(this).inflate(R.layout.item_failed_login, null);
+            TableRow row = (TableRow) LayoutInflater.from(this)
+                    .inflate(R.layout.item_row_table_layout, null);
 
             TextView usernameTextView = row.findViewById(R.id.username);
             TextView passwordTextView = row.findViewById(R.id.password);
