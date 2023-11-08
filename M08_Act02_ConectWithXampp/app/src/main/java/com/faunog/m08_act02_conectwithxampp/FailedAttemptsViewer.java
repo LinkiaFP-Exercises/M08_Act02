@@ -1,5 +1,6 @@
 package com.faunog.m08_act02_conectwithxampp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -55,6 +56,7 @@ public class FailedAttemptsViewer extends AppCompatActivity {
     private void populateListView() {
         List<FailedLogin> failedAttemptsList = sqLiteFailedAccounts.getFailedAccounts();
         for (FailedLogin failedLogin : failedAttemptsList) {
+            @SuppressLint("InflateParams")
             TableRow row = (TableRow) LayoutInflater.from(this).inflate(R.layout.item_failed_login, null);
 
             TextView usernameTextView = row.findViewById(R.id.username);
