@@ -4,17 +4,12 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -25,10 +20,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 
 public class DatabaseControler {
@@ -118,8 +109,8 @@ public class DatabaseControler {
 
 
                 // Procesar la respuesta del servidor
-                Document document = convertStringToXMLDocument(stringBuilder.toString());
-                response = catchStatusResponseFromXMLDocument(document);
+                Document document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
+                response = XMLConverter.catchStatusResponseFromXMLDocument(document);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,7 +147,7 @@ public class DatabaseControler {
                 connexion.disconnect();
 
                 // Convertir la respuesta a un documento XML
-                document = convertStringToXMLDocument(stringBuilder.toString());
+                document = XMLConverter.convertStringToXMLDocument(stringBuilder.toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -165,24 +156,6 @@ public class DatabaseControler {
         }, miExecutor);
     }
 
-    private static Document convertStringToXMLDocument(String xmlString) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document document = null;
-        try {
-            builder = factory.newDocumentBuilder();
-            document = builder.parse(new InputSource(new StringReader(xmlString)));
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
-        return document;
-    }
-
-    private static String catchStatusResponseFromXMLDocument(Document document) {
-        NodeList listaItem = (NodeList) document.getElementsByTagName("respuesta");
-        Element element = (Element) listaItem.item(0);
-        return element.getElementsByTagName("estado").item(0).getTextContent();
-    }
     private static final String TAG = "DatabaseControler";
 }
 
