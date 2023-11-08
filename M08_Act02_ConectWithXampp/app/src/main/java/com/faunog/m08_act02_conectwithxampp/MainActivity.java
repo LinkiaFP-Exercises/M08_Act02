@@ -1,6 +1,5 @@
 package com.faunog.m08_act02_conectwithxampp;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -9,15 +8,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
+    private MainValidations valid;
     private SQLiteFailedAccounts sqLiteManager;
     private static final String TAG = "MainActivity";
 
@@ -34,45 +31,18 @@ public class MainActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
         sqLiteManager = SQLiteFailedAccounts.createManager(this);
+        valid = new MainValidations();
     }
 
     private void applyListenersToButtonLogin() {
         loginButton.setOnClickListener((v) -> {
             try {
-                final String[] response = ifHasTheNecessaryToConnect();
+                final String[] response = valid.ifHasTheNecessaryToConnect(usernameEditText, passwordEditText, this);
                 handleResponse(response);
             } catch (ExecutionException | InterruptedException e) {
                 handleException(e);
             }
         });
-    }
-
-    private String[] ifHasTheNecessaryToConnect() throws ExecutionException, InterruptedException {
-        final String username = usernameEditText.getText().toString().trim();
-        final String password = passwordEditText.getText().toString().trim();
-
-        String messageStatus = validateCredentials(username, password);
-
-        if (!messageStatus.equals("ok")) {
-            Toast.makeText(getApplicationContext(), messageStatus, Toast.LENGTH_LONG).show();
-        }
-
-        return new String[]{messageStatus, username, password};
-    }
-
-    private String validateCredentials(String username, String password) {
-        if (notAlphanumeric_NotNull(username)) {
-            return "Username solo alfanumericos\na-z, A-Z, 0-9 o _";
-        } else if (notBetween4And8digits(password)) {
-            return "Contraseña: 4 a 8 digits\na-zA-Z0-9_-!¡*+,.@#€$%&?¿";
-        } else if (networkNotAvailable()) {
-            return "No hay conectividad,Conecte a una red móvil o wi-fi";
-        } else if (serverNotAvailable()) {
-            return "Servidor no disponible,\nIntente de nuevo más tarde.";
-        } else if (databaseNotAvailable(username, password)) {
-            return "Base de Datos no disponible,\nIntente de nuevo más tarde.";
-        }
-        return "ok";
     }
 
     private void handleResponse(String[] response) {
@@ -84,54 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private void handleException(Exception e) {
         Log.e(TAG, "Error in applyListenersToButtonLogin:\n\n\n" + e.getMessage());
         throw new RuntimeException(e);
-    }
-
-    private boolean notAlphanumeric_NotNull(String input) {
-        return input == null || !input.matches("\\w+");
-    }
-
-    private boolean notBetween4And8digits(String input) {
-        final String regexPassword = "^[\\w!¡*+,.\\-@#€$%&?¿]+$";
-        return input == null || input.length() < 4 || input.length() > 8 || !input.matches(regexPassword);
-    }
-
-    private boolean databaseNotAvailable(String user, String password) {
-        try {
-            return !DatabaseControler.isMySQLRunning(user, password).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, "Error in databaseNotAvailable:\n\n\n" + e.getMessage());
-        }
-        return true;
-    }
-
-    private boolean serverNotAvailable() {
-        try {
-            return !DatabaseControler.isServerRunning().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, "Error in serverNotAvailable:\n\n\n" + e.getMessage());
-        }
-        return true;
-    }
-
-    private boolean networkNotAvailable() {
-        try {
-            return !isNetworkAvailable().get();
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e(TAG, "Error in networkNotAvailable:\n\n\n" + e.getMessage());
-        }
-        return true;
-    }
-
-    private CompletableFuture<Boolean> isNetworkAvailable() {
-        Executor miExecutor = Executors.newSingleThreadExecutor();
-        return CompletableFuture.supplyAsync(() -> {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connectivityManager != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-            }
-            return false;
-        }, miExecutor);
     }
 
     private void connectThenOpenDatabaseViewer(String username, String password) {
