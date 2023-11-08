@@ -21,28 +21,22 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
-    private SQLiteFailedAccounts sqLiteFailedAccounts;
+    private SQLiteFailedAccounts sqLiteManager;
     private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        createSQLiteFailedAccounts();
         connectVariableWithElements();
         applyListenersToButtonLogin();
-    }
-
-    private void createSQLiteFailedAccounts() {
-        sqLiteFailedAccounts = new SQLiteFailedAccounts(this);
-        sqLiteFailedAccounts.onCreate(sqLiteFailedAccounts.getWritableDatabase());
     }
 
     private void connectVariableWithElements() {
         usernameEditText = findViewById(R.id.login_user);
         passwordEditText = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
+        sqLiteManager = SQLiteFailedAccounts.createManager(this);
     }
 
     private void applyListenersToButtonLogin() {
@@ -134,27 +128,20 @@ public class MainActivity extends AppCompatActivity {
     private CompletableFuture<Boolean> isNetworkAvailable() {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
-            ConnectivityManager connectivityManager =
-                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connectivityManager != null) {
-                NetworkCapabilities capabilities =
-                        connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-                return capabilities != null &&
-                        (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
             }
             return false;
         }, miExecutor);
     }
 
     private void connectThenOpenDatabaseViewer(String username, String password) {
-        DatabaseControler.validateUser(username, password)
-                .thenAccept(responseStatus -> {
-                    if (responseStatus.equals("ok"))
-                        OpenDatabaseViewer(responseStatus);
-                    else
-                        ifUserAndPassNotOkSaveFailedAttempt(username, password);
-                });
+        DatabaseControler.validateUser(username, password).thenAccept(responseStatus -> {
+            if (responseStatus.equals("ok")) OpenDatabaseViewer(responseStatus);
+            else ifUserAndPassNotOkSaveFailedAttempt(username, password);
+        });
     }
 
     private void OpenDatabaseViewer(String validLoginUserAndPass) {
@@ -173,13 +160,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ifUserAndPassNotOkSaveFailedAttempt(String username, String password) {
-        boolean success = sqLiteFailedAccounts.saveFailedAttempt(username, password);
+        boolean success = sqLiteManager.saveFailedAttempt(username, password);
         final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
 
-        if (success)
-            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
-        else
-            Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
+        if (success) Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt Saved");
+        else Log.i(TAG_sqLiteFailedAccounts, "Failed Attempt NOT Saved");
 
         openActivityFailedAttemptsViewer();
     }

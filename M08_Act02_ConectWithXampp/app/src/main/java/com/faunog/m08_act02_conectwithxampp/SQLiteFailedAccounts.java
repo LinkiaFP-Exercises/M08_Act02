@@ -34,12 +34,7 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_USERNAME + " TEXT, " +
-                COL_PASSWORD + " TEXT, " +
-                COL_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
-                ")";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_USERNAME + " TEXT, " + COL_PASSWORD + " TEXT, " + COL_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP" + ")";
         db.execSQL(createTableQuery);
         DATE_FORMAT = new SimpleDateFormat(PATTERN_DATE, Locale.getDefault());
         DATE_FORMAT.setTimeZone(SPAIN_TIME_ZONE);
@@ -85,6 +80,12 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
         }
 
         return failedLogins;
+    }
+
+    public static SQLiteFailedAccounts createManager(Context context) {
+        SQLiteFailedAccounts sqLiteFailedAccounts = new SQLiteFailedAccounts(context);
+        sqLiteFailedAccounts.onCreate(sqLiteFailedAccounts.getWritableDatabase());
+        return sqLiteFailedAccounts;
     }
 
 }
