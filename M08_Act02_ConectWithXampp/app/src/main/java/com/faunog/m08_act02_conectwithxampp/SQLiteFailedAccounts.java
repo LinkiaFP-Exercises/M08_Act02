@@ -15,6 +15,13 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
+/**
+ * La clase SQLiteFailedAccounts proporciona métodos para manejar una base de datos local SQLite que almacena intentos fallidos de inicio de sesión.
+ *
+ * @author <a href="https://about.me/prof.guazina">Fauno Guazina</a>
+ * @version 1.1
+ * @since 18/10/2023
+ */
 public class SQLiteFailedAccounts extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "failed_accounts.db";
     private static final int DATABASE_VERSION = 1;
@@ -28,6 +35,11 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
     private static SimpleDateFormat DATE_FORMAT;
 
 
+    /**
+     * Crea una nueva instancia de SQLiteFailedAccounts.
+     *
+     * @param context El contexto de la aplicación.
+     */
     public SQLiteFailedAccounts(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -50,6 +62,13 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Guarda un intento fallido de inicio de sesión en la base de datos.
+     *
+     * @param username El nombre de usuario.
+     * @param password La contraseña.
+     * @return True si se guarda correctamente, de lo contrario False.
+     */
     public boolean saveFailedAttempt(String username, String password) {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
@@ -66,6 +85,11 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Obtiene la lista de intentos de inicio de sesión fallidos de la base de datos.
+     *
+     * @return Una lista de objetos FailedLogin que representan los intentos de inicio de sesión fallidos.
+     */
     public List<FailedLogin> getFailedAccounts() {
         List<FailedLogin> failedLogins = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -86,12 +110,24 @@ public class SQLiteFailedAccounts extends SQLiteOpenHelper {
         return failedLogins;
     }
 
+    /**
+     * Crea un nuevo administrador SQLiteFailedAccounts.
+     *
+     * @param context El contexto de la aplicación.
+     * @return Una nueva instancia de SQLiteFailedAccounts.
+     */
     public static SQLiteFailedAccounts createManager(Context context) {
         SQLiteFailedAccounts sqLiteFailedAccounts = new SQLiteFailedAccounts(context);
         sqLiteFailedAccounts.onCreate(sqLiteFailedAccounts.getWritableDatabase());
         return sqLiteFailedAccounts;
     }
 
+    /**
+     * Guarda un intento fallido de inicio de sesión si el usuario o la contraseña no son correctos.
+     *
+     * @param statusUserPass Un arreglo que contiene el estado, el nombre de usuario y la contraseña.
+     * @param context        El contexto de la aplicación.
+     */
     public void ifUserAndPassNotOkSaveFailedAttempt(String[] statusUserPass, Context context) {
         boolean success = saveFailedAttempt(statusUserPass[1], statusUserPass[2]);
         final String TAG_sqLiteFailedAccounts = "sqLiteFailedAccounts";
