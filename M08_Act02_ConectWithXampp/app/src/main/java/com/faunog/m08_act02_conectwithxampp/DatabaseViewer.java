@@ -1,6 +1,7 @@
 package com.faunog.m08_act02_conectwithxampp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.TableLayout;
@@ -50,8 +51,13 @@ public class DatabaseViewer extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
-        OpenActivities.toolbarGoToMainViewer(toolbar, this);
+        
+        toolbar.setNavigationOnClickListener(v ->{
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.startActivity(intent);
+            this.finish();
+        });
     }
 
     /**

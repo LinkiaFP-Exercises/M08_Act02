@@ -105,7 +105,7 @@ public class DatabaseControler {
         Executor miExecutor = Executors.newSingleThreadExecutor();
         return CompletableFuture.supplyAsync(() -> {
             String response = null;
-            String url = "http://192.168.1.113/validacuenta_fauno.php";
+            String url = "http://192.168.1.113/validacuenta2fauno.php";
 
             try {
                 HttpURLConnection connection = createHTTPConnection(url);
@@ -195,7 +195,7 @@ public class DatabaseControler {
     private static Document createHTTPGetRequest() {
         Document document = null;
         try {
-            HttpURLConnection connection = createHTTPConnection("http://192.168.1.113/consultausuarios_fauno.php");
+            HttpURLConnection connection = createHTTPConnection("http://192.168.1.113/consultausuarios2fauno.php");
             document = readServerResponse(connection);
         } catch (IOException e) {
             Log.e(TAG, "Error in createHTTPGetRequest:\n\n\n" + e.getMessage());
