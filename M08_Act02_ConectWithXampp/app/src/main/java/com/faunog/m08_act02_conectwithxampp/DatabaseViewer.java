@@ -30,7 +30,7 @@ public class DatabaseViewer extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("");
+            getSupportActionBar().setTitle(getString(R.string.app_name));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
