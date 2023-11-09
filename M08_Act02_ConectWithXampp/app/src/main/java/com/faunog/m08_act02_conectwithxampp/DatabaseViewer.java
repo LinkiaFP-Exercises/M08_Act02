@@ -63,6 +63,12 @@ public class DatabaseViewer extends AppCompatActivity {
         passwordTextView.setText(usuario.contrasena());
         dateTimeTextView.setText(usuario.fecha_nacimiento());
 
+        int color = getColor(R.color.black);
+
+        usernameTextView.setTextColor(color);
+        passwordTextView.setTextColor(color);
+        dateTimeTextView.setTextColor(color);
+
         tableLayoutUsers.addView(row);
     }
 
