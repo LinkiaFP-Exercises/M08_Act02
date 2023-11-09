@@ -16,6 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Clase que permite visualizar la base de datos y cargar los datos en una tabla.
+ *
+ * @author <a href="https://about.me/prof.guazina">Fauno Guazina</a>
+ * @version 1.1
+ * @since 18/10/2023
+ */
 public class DatabaseViewer extends AppCompatActivity {
 
     private TableLayout tableLayoutUsers;
@@ -31,6 +38,9 @@ public class DatabaseViewer extends AppCompatActivity {
 
     }
 
+    /**
+     * Configura la función de navegación de la barra de herramientas.
+     */
     private void toolbarNavigationFunction() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -44,10 +54,16 @@ public class DatabaseViewer extends AppCompatActivity {
         OpenActivities.toolbarGoToMainViewer(toolbar, this);
     }
 
+    /**
+     * Conecta las variables con los elementos de la interfaz de usuario.
+     */
     private void connectVariableWithElements() {
         tableLayoutUsers = findViewById(R.id.tableLayoutUsers);
     }
 
+    /**
+     * Recupera y llena la tabla de usuarios con datos de la base de datos.
+     */
     private void fetchAndPopulateTableLayoutUsers() {
         DatabaseControler.consultUsers()
                 .thenAccept(document -> XMLConverter.convertXMLtoUsuariosMySQL(document)
@@ -72,9 +88,14 @@ public class DatabaseViewer extends AppCompatActivity {
 
                             tableLayoutUsers.addView(row);
                         }));
-
     }
 
+    /*
+        los métodos onSaveInstanceState y onRestoreInstanceState he tenido de implementar debido
+        que al hacer el layout responsive, muchas veces se perdia informaciones de la tabla y
+        la recuperación de los datos por la base de datos MySQL es más lento que guardar
+        temporalmente sus estados.
+     */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -82,6 +103,11 @@ public class DatabaseViewer extends AppCompatActivity {
         outState.putStringArrayList("data_key", new ArrayList<>(dataToSave));
     }
 
+    /**
+     * Obtiene datos de la tabla de diseño.
+     *
+     * @return La lista de datos de la tabla.
+     */
     private List<String> getDataFromTableLayout() {
         return IntStream.range(0, tableLayoutUsers.getChildCount())
                 .mapToObj(i -> tableLayoutUsers.getChildAt(i))
@@ -107,6 +133,11 @@ public class DatabaseViewer extends AppCompatActivity {
         repopulateTableLayout(savedData);
     }
 
+    /**
+     * Rellena nuevamente la tabla de diseño con los datos guardados.
+     *
+     * @param savedData Los datos guardados que se utilizarán para repoblar la tabla.
+     */
     private void repopulateTableLayout(List<String> savedData) {
         tableLayoutUsers.removeAllViews();
         savedData.stream()

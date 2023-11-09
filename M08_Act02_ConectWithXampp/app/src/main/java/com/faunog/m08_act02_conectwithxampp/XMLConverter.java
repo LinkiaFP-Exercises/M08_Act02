@@ -18,8 +18,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+/**
+ * Esta clase proporciona métodos para convertir cadenas en documentos XML y viceversa, así como para manejar y convertir elementos XML a objetos de tipo UsuariosMySQL.
+ *
+ * @author <a href="https://about.me/prof.guazina">Fauno Guazina</a>
+ * @version 1.1
+ * @since 18/10/2023
+ */
 public class XMLConverter {
 
+    /**
+     * Convierte una cadena XML en un documento XML.
+     *
+     * @param xmlString La cadena XML a convertir.
+     * @return Un objeto Document que representa el documento XML.
+     */
     public static Document convertStringToXMLDocument(String xmlString) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -31,6 +44,12 @@ public class XMLConverter {
         }
     }
 
+    /**
+     * Captura el estado de respuesta de un documento XML.
+     *
+     * @param document El documento XML.
+     * @return El estado de la respuesta.
+     */
     public static String catchStatusResponseFromXMLDocument(Document document) {
         try {
             NodeList listaItem = document.getElementsByTagName("respuesta");
@@ -41,7 +60,14 @@ public class XMLConverter {
             return null;
         }
     }
-    
+
+    /**
+     * Convierte un documento XML en una lista de objetos UsuariosMySQL.
+     *
+     * @param document El documento XML a convertir.
+     * @return Una lista de objetos UsuariosMySQL.
+     * @see XMLConverter#getElementTextContent(Element, String)
+     */
     public static List<UsuariosMySQL> convertXMLtoUsuariosMySQL(Document document) {
         List<UsuariosMySQL> usuariosMySQLList = new ArrayList<>();
 
@@ -64,6 +90,13 @@ public class XMLConverter {
         return usuariosMySQLList;
     }
 
+    /**
+     * Obtiene el contenido de texto de un elemento específico en el documento XML.
+     *
+     * @param element  El elemento XML.
+     * @param tagName  El nombre de la etiqueta del elemento.
+     * @return El contenido de texto del elemento.
+     */
     private static String getElementTextContent(Element element, String tagName) {
         try {
             return element.getElementsByTagName(tagName).item(0).getTextContent();
