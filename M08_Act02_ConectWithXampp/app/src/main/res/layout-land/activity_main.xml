@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradiente_login"
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="20dp"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="3">
+
+        <!-- CABECERA -->
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:contentDescription="@string/login_imageTOP_description"
+            android:src="@drawable/login_candado"
+            tools:ignore="ImageContrastCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_alternates_black"
+            android:text="@string/login_title"
+            android:textColor="@color/l2"
+            android:textSize="35sp"
+            android:typeface="normal"
+            tools:ignore="TextContrastCheck" /> <!--CABECERA -->
+
+        <!--FAUNO LOGO-->
+        <ImageView
+            android:layout_width="270dp"
+            android:layout_height="93dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/fauno_logo" /> <!--FAUNO LOGO-->
+
+    </LinearLayout>
+
+    <!--CUERPO -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!--- USUARIO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginVertical="10dp"
+                android:contentDescription="@string/login_imageUSER_description"
+                android:src="@drawable/login_user"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/login_user"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginStart="10dp"
+                android:autofillHints="@string/login_hint_user"
+                android:fontFamily="@font/montserrat_medium"
+                android:hint="@string/login_hint_user"
+                android:inputType="text"
+                android:textColor="@color/white"
+                android:textColorHint="@color/Z1"
+                android:textSize="20sp"
+                tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+        </LinearLayout>  <!--USUARIO-->
+
+        <!--- CONTRASEÑA -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginVertical="10dp"
+                android:contentDescription="@string/login_imagePASSWORD_description"
+                android:src="@drawable/login_key"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/login_password"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginStart="10dp"
+                android:autofillHints="@string/login_hint_password"
+                android:fontFamily="@font/montserrat_medium"
+                android:hint="@string/login_hint_password"
+                android:inputType="textVisiblePassword"
+                android:textColorHint="@color/Z1"
+                android:textSize="20sp"
+                tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
+        </LinearLayout>  <!--CONTRASEÑA-->
+
+        <!--- BUTTON -->
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/A1"
+            android:backgroundTintMode="add"
+            android:fontFamily="@font/montserrat_alternates_black"
+            android:shadowColor="@color/black"
+            android:text="@string/login_button_text"
+            android:textColor="@color/l3"
+            android:textColorHighlight="@color/Z1"
+            android:textSize="20sp"
+            tools:ignore="TextContrastCheck" /> <!--BUTTON-->
+
+    </LinearLayout>    <!--CUERPO-->
+
+
+</LinearLayout>
+
