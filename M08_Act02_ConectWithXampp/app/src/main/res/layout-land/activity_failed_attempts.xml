@@ -2,10 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linear_layout_database"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradiente_database_viewer"
+    android:background="@drawable/gradiente_failed_login"
     android:orientation="vertical"
     tools:context=".DatabaseViewer">
 
@@ -22,7 +21,7 @@
         android:fontFamily="@font/montserrat_alternates_black"
         android:gravity="center"
         android:padding="16dp"
-        android:text="Usuarios MySQL"
+        android:text="Intentos Fallidos"
         android:textColor="@color/l3"
         android:textSize="24sp"
         tools:ignore="HardcodedText,TextContrastCheck" />
@@ -32,7 +31,7 @@
         android:layout_height="match_parent">
 
         <TableLayout
-            android:id="@+id/tableLayoutUsers"
+            android:id="@+id/tableLayoutFailedAttempts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="*">
@@ -45,12 +44,11 @@
                 tools:ignore="UselessParent">
 
                 <TextView
-                    android:id="@+id/username_title_MySQL"
+                    android:id="@+id/username_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/montserrat_alternates_black"
-                    android:gravity="center_vertical|center_horizontal"
                     android:padding="5dp"
                     android:text="Username"
                     android:textAlignment="center"
@@ -59,12 +57,11 @@
                     tools:ignore="HardcodedText,TextContrastCheck" />
 
                 <TextView
-                    android:id="@+id/password_title_MySQL"
+                    android:id="@+id/password_title"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/montserrat_alternates_black"
-                    android:gravity="center_vertical|center_horizontal"
                     android:padding="5dp"
                     android:text="Password"
                     android:textAlignment="center"
@@ -73,14 +70,13 @@
                     tools:ignore="HardcodedText,TextContrastCheck" />
 
                 <TextView
-                    android:id="@+id/dateTime_title_MySQL"
+                    android:id="@+id/dateTime_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/montserrat_alternates_black"
-                    android:gravity="center_vertical|center_horizontal"
                     android:padding="5dp"
-                    android:text="Fecha Nacimiento"
+                    android:text="DateTime"
                     android:textAlignment="center"
                     android:textColor="@color/Z1"
                     android:textStyle="normal"
@@ -88,5 +84,4 @@
             </TableRow>
         </TableLayout>
     </ScrollView>
-
 </LinearLayout>

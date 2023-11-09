@@ -21,6 +21,7 @@
             android:exported="false" />
         <activity
             android:name=".DatabaseViewer"
+            android:configChanges="orientation|screenSize"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
