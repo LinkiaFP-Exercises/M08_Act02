@@ -43,10 +43,9 @@ public class DatabaseViewer extends AppCompatActivity {
     }
 
     private void fetchAndPopulateTableLayoutUsers() {
-        DatabaseControler.consultUsers().thenAccept(document -> {
-            XMLConverter.convertXMLtoUsuariosMySQL(document)
-                    .forEach(this::convertUsuariosMySQLinRow);
-        });
+        DatabaseControler.consultUsers()
+                .thenAccept(document -> XMLConverter.convertXMLtoUsuariosMySQL(document)
+                .forEach(this::convertUsuariosMySQLinRow));
 
     }
 
