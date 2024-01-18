@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradiente_failed_login"
+    android:orientation="vertical"
+    tools:context=".DatabaseViewer">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/TransparentToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_alternates_black"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Intentos Fallidos"
+        android:textColor="@color/l3"
+        android:textSize="24sp"
+        tools:ignore="HardcodedText,TextContrastCheck" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:id="@+id/tableLayoutFailedAttempts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*">
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                tools:ignore="UselessParent">
+
+                <TextView
+                    android:id="@+id/username_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat_alternates_black"
+                    android:padding="5dp"
+                    android:text="Username"
+                    android:textAlignment="center"
+                    android:textColor="@color/Z1"
+                    android:textStyle="normal"
+                    tools:ignore="HardcodedText,TextContrastCheck" />
+
+                <TextView
+                    android:id="@+id/password_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat_alternates_black"
+                    android:padding="5dp"
+                    android:text="Password"
+                    android:textAlignment="center"
+                    android:textColor="@color/Z1"
+                    android:textStyle="normal"
+                    tools:ignore="HardcodedText,TextContrastCheck" />
+
+                <TextView
+                    android:id="@+id/dateTime_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat_alternates_black"
+                    android:padding="5dp"
+                    android:text="DateTime"
+                    android:textAlignment="center"
+                    android:textColor="@color/Z1"
+                    android:textStyle="normal"
+                    tools:ignore="HardcodedText,TextContrastCheck" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+</LinearLayout>
